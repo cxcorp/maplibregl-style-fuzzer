@@ -1,0 +1,23 @@
+{
+  "name": "testharness",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "vitest": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "typescript": "~5.7.2",
+    "vite": "^6.1.0"
+  },
+  "dependencies": {
+    "@maplibre/maplibre-gl-style-spec": "^23.1.0",
+    "fast-check": "^3.23.2",
+    "maplibre-gl": "^5.1.0",
+    "vitest": "^3.0.6"
+  }
+}
