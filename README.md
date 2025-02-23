@@ -141,6 +141,14 @@ TypeError: Cannot use 'in' operator to search for 'ref' in
 ```
 ~~~
 
+## Running
+
+Install npm deps.
+
+Modify `src/fuzz.test.ts` to have `test.only()` on only the type of fuzzing you want to run, alter the fastcheck run count to something like 1000, and run `npm run vitest`.
+
+10000 iterations is around one minute.
+
 ## License
 
 ### My code
