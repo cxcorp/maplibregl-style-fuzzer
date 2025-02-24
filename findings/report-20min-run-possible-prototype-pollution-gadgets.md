@@ -1,11 +1,11 @@
 # Table of contents
 
-[1. TypeError: validateElement is not a function](#1)
-[2. TypeError: Cannot use 'in' operator to search for 'ref' in ](#2)
-[3. TypeError: Cannot convert undefined or null to object](#3)
-[4. TypeError: Object.prototype.toLocaleString called on null or undefined](#4)
-[5. TypeError: namedColorsMatch is not iterable](#5)
-[6. TypeError: Expr.parse is not a function](#6)
+1. [TypeError: validateElement is not a function](#1)
+2. [TypeError: Cannot use 'in' operator to search for 'ref' in ](#2)
+3. [TypeError: Cannot convert undefined or null to object](#3)
+4. [TypeError: Object.prototype.toLocaleString called on null or undefined](#4)
+5. [TypeError: namedColorsMatch is not iterable](#5)
+6. [TypeError: Expr.parse is not a function](#6)
 
 ## 1
 
