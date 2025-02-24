@@ -1,18 +1,18 @@
 # Table of contents
 
-[1. TypeError: Cannot use 'in' operator to search for 'ref' in 3](#1)
-[2. TypeError: Cannot read properties of null (reading 'type')](#2)
-[3. TypeError: Cannot read properties of null (reading 'type')](#3)
-[4. TypeError: Cannot read properties of undefined (reading 'id')](#4)
-[5. TypeError: Cannot read properties of undefined (reading 'type')](#5)
-[6. TypeError: Cannot read properties of null (reading 'id')](#6)
-[7. TypeError: Cannot read properties of undefined (reading 'type')](#7)
-[8. TypeError: Cannot convert object to primitive value](#8)
-[9. TypeError: Expr.parse is not a function](#9)
-[10. TypeError: Cannot convert undefined or null to object](#10)
-[11. TypeError: validateElement is not a function](#11)
-[12. TypeError: Cannot convert object to primitive value](#12)
-[13. TypeError: Cannot convert object to primitive value](#13)
+1. [TypeError: Cannot use 'in' operator to search for 'ref' in 3](#1)
+2. [TypeError: Cannot read properties of null (reading 'type')](#2)
+3. [TypeError: Cannot read properties of null (reading 'type')](#3)
+4. [TypeError: Cannot read properties of undefined (reading 'id')](#4)
+5. [TypeError: Cannot read properties of undefined (reading 'type')](#5)
+6. [TypeError: Cannot read properties of null (reading 'id')](#6)
+7. [TypeError: Cannot read properties of undefined (reading 'type')](#7)
+8. [TypeError: Cannot convert object to primitive value](#8)
+9. [TypeError: Expr.parse is not a function](#9)
+10. [TypeError: Cannot convert undefined or null to object](#10)
+11. [TypeError: validateElement is not a function](#11)
+12. [TypeError: Cannot convert object to primitive value](#12)
+13. [TypeError: Cannot convert object to primitive value](#13)
 
 ## 1
 
@@ -875,4 +875,3 @@ TypeError: Cannot convert object to primitive value
   ]
 }
 ```
-
