@@ -15,7 +15,7 @@
     "vite": "^6.1.0"
   },
   "dependencies": {
-    "@maplibre/maplibre-gl-style-spec": "^23.1.0",
+    "@maplibre/maplibre-gl-style-spec": "file:../maplibre-style-spec",
     "fast-check": "^3.23.2",
     "maplibre-gl": "^5.1.0",
     "vitest": "^3.0.6"

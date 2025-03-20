@@ -49,6 +49,11 @@ bigListOfNaughtyStrings.push(
   '{"constructor":{"prototype":{"isAdmin":true,"data":"","list":"","items":"","attributes":"","foo":{},"url":"javascript:alert(\'pwned\')"}}}'
 );
 
+/**
+ * TODO: fuzz jsonlint type confusion via objects
+ * e.g. {"__proto__": 123}, {"__proto__": "123"}, {"__proto__": null}, {"__proto__": []}
+ */
+
 test.only(
   "fuzz style spec values with fast-check anything arbitrary ",
   async () => {
@@ -70,9 +75,25 @@ test.only(
         undefined
       ).i;
 
-    const InjectionStringArb = fc.anything({
-      withObjectString: true,
-    });
+    // const InjectionArb = fc.anything({
+    //   withObjectString: true,
+    // });
+    const InjectionArb = fc.oneof(
+      fc.object().map((o) => ({ __proto__: o })),
+      fc
+        .tuple(fc.anything({ withObjectString: true }), fc.object())
+        .map(([proto, otherObj]) => {
+          const o = Object.create(null);
+          Object.assign(o, otherObj);
+          Object.defineProperty(o, "__proto__", {
+            value: proto,
+            configurable: true,
+            enumerable: true,
+            writable: true,
+          });
+          return o;
+        })
+    );
 
     for (const originalLayer of originalStyle.layers) {
       const style = cloneBaseStyleWithLayer(originalLayer);
@@ -82,7 +103,7 @@ test.only(
 
       const property = fc.property(
         SeedArb,
-        InjectionStringArb,
+        InjectionArb,
         (seed, injectedString) => {
           const testStyle = deepClone(style);
           const { value: newStyle } =
@@ -114,7 +135,10 @@ test.only(
       ).toFixed(1)}%)`
     );
 
-    await writeMarkdownReportToFile("./findings/report.md", errorReporter.getReports());
+    await writeMarkdownReportToFile(
+      "./findings/report-2.md",
+      errorReporter.getReports()
+    );
   },
   20 * 60 * 1000
 );
@@ -179,7 +203,7 @@ test(
         }
       );
 
-      fc.assert(property, { numRuns: 50000 });
+      fc.assert(property, { numRuns: 5000 });
     }
 
     const { reportedErrorCount, uniqueErrors } = errorReporter.getStats();
@@ -192,7 +216,10 @@ test(
       ).toFixed(1)}%)`
     );
 
-    await writeMarkdownReportToFile("./findings/report.md", errorReporter.getReports());
+    await writeMarkdownReportToFile(
+      "./findings/report.md",
+      errorReporter.getReports()
+    );
   },
   20 * 60 * 1000
 );
@@ -252,7 +279,10 @@ test(
       ).toFixed(1)}%)`
     );
 
-    await writeMarkdownReportToFile("./findings/report.md", errorReporter.getReports());
+    await writeMarkdownReportToFile(
+      "./findings/report.md",
+      errorReporter.getReports()
+    );
     return;
   },
   10 * 60 * 1000

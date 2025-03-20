@@ -25,7 +25,13 @@ export const iterateDfsKeysAndValuesRecursivelyAndInjectAtSeed = (
         //   obj[replacement] = recurseInternal(obj[key]);
         // }
         i++;
-        obj[key] = targetI === i ? replacement : recurseInternal(obj[key]);
+        delete obj[key];
+        Object.defineProperty(obj, key, {
+          value: targetI === i ? replacement : recurseInternal(obj[key]),
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        });
       }
     }
 
@@ -83,7 +89,12 @@ export const cloneDfsTreeUntil = (obj: StyleSpecification, targetI: number) => {
           undefined,
         ];
 
-        obj[key] = retValue;
+        Object.defineProperty(obj, key, {
+          value: retValue,
+          configurable: true,
+          enumerable: true,
+          writable: true,
+        });
 
         if (shouldStop) {
           return [true, obj];
