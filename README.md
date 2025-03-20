@@ -1,12 +1,31 @@
 # maplibregl-style-fuzzer
 
-Fuzzes maplibregl style spec validator with `fast-check`'s arbitraries and big-list-of-naughty-strings values.
+A structured, coverage guided fuzzer for the maplibre-gl-js style spec.
+
+This is a fuzzer based on Jazzer.js to fuzz `@maplibre/maplibre-gl-style-spec`'s JSON style spec.
+
+## Discovered crashes
+
+See [./findings](./findings).
+
+## Install and run
+
+1. Install Node v22
+2. Clone this repo
+3. Clone https://github.com/cxcorp/jazzer.js to a directory next to this clone (it's referred to with `file:../jazzer.js` in package.json)
+4. `cd jazzer.js` and install its npm packages and `npm run prebuild` the native fuzzer (you might need to install a compiler) and then `npm run build` the workspace
+5. cd to this repo
+6. run npm install
+7. mkdir corpus
+8. npm start
+9. wait 0-3000 seconds
+10. profit
 
 ## Motivation
 
 I was looking at MapLibreGL and noticed that many places just suggest using someone else's hosted style JSON via an URL. I was immediately curious as to what is the worst a malicious JSON could do.
 
-After manually looking at the [maplibre-style-spec](https://github.com/maplibre/maplibre-style-spec) repo which contains the validators, I noticed multiple places that access things like `objectWithConstantKeys[attackerControlledValue]` which do funny things if I pass `"__proto__"` or `{valueOf: null}` as a value. I decided to try to fuzz the style validators. I tried to find a quick way to cover a lot of ground without having to handicraft fast-check arbitraries according to maplibre-style-spec, so the fuzzer works like this:
+After manually looking at the [maplibre-style-spec](https://github.com/maplibre/maplibre-style-spec) repo which contains the validators, I noticed multiple places that access things like `objectWithConstantKeys[attackerControlledValue]` which do funny things if I pass `"__proto__"` or `{valueOf: null}` as a value. I decided to try to fuzz the style validators. I tried to find a quick way to cover a lot of ground without having to handicraft fast-check arbitraries according to maplibre-style-spec, so the first version of the fuzzer (see branch `self-made-prototype`) worked like this:
 
 1. Start with a large, existing style which hopefully uses as many style features as possible
 2. Recurse the style objects and increment an index for each object key and value (and array value etc.)
@@ -17,137 +36,9 @@ After manually looking at the [maplibre-style-spec](https://github.com/maplibre/
 7. ???
 8. Profit?
 
-See `src/fuzz.test.ts` for the "fuzzer" and `./findings` for results.
+After finding success, I decided to investigate existing coverage guided JS fuzzers to make the fuzzing less black box. I discovered jazzer.js and jsfuzz, of which jazzer.js showed deeper instrumentation and used the well known libFuzzer.
 
-The findings of the current style and iteration of fuzzer are probably exhausted and further findings would require either finding larger styles, or handcrafting more specific examples.
-
-## Example findings
-
-~~~md
-# Table of contents
-
-[1. TypeError: validateElement is not a function](#1)
-[2. TypeError: Cannot use 'in' operator to search for 'ref' in ](#2)
-[3. TypeError: Cannot convert undefined or null to object](#3)
-[4. TypeError: Object.prototype.toLocaleString called on null or undefined](#4)
-[5. TypeError: namedColorsMatch is not iterable](#5)
-[6. TypeError: Expr.parse is not a function](#6)
-
-## 1
-
-### Stack
-
-```
-TypeError: validateElement is not a function
-    at validateObject (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate_object.ts:38:32)
-    at Object.validateSource [as source] (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate_source.ts:32:22)
-    at validate (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate.ts:96:42)
-    at validateObject (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate_object.ts:38:32)
-    at validate (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate.ts:99:23)
-    at validateObject (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate_object.ts:38:32)
-    at validate (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate.ts:99:23)
-    at validateStyleMin (node_modules/@maplibre/maplibre-gl-style-spec/src/validate_style.min.ts:35:28)
-    at src/fuzz.test.ts:175:11
-    at Property.predicate (file://node_modules/fast-check/lib/esm/check/property/Property.js:14:54)
-```
-
-### Example
-
-```
-{
-  "version": 8,
-  "metadata": {
-    "mapbox:autocomposite": false,
-    "maputnik:renderer": "mbgljs",
-    "openmaptiles:version": "3.x"
-  },
-  "sources": {
-    "ne2_shaded": {
-      "maxzoom": 6,
-      "tileSize": 256,
-      "tiles": [
-        "https://tiles.openfreemap.org/natural_earth/ne2sr/{z}/{x}/{y}.png"
-      ],
-      "type": "raster",
-      "__proto__.": 6
-    },
-    "openmaptiles": {
-      "type": "vector",
-      "url": "https://tiles.openfreemap.org/planet"
-    }
-  },
-  "sprite": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",
-  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
-  "layers": [
-    {
-      "id": "background",
-      "type": "background",
-      "paint": {
-        "background-color": "#f8f4f0"
-      }
-    }
-  ]
-}
-```
-
-## 2
-
-### Stack
-
-```
-TypeError: Cannot use 'in' operator to search for 'ref' in 
-    at Object.validateLayer [as layer] (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate_layer.ts:34:14)
-    at validate (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate.ts:96:42)
-    at Object.validateArray [as array] (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate_array.ts:40:32)
-    at validate (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate.ts:96:42)
-    at validateObject (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate_object.ts:38:32)
-    at validate (node_modules/@maplibre/maplibre-gl-style-spec/src/validate/validate.ts:99:23)
-    at validateStyleMin (node_modules/@maplibre/maplibre-gl-style-spec/src/validate_style.min.ts:35:28)
-    at src/fuzz.test.ts:175:11
-    at Property.predicate (file://node_modules/fast-check/lib/esm/check/property/Property.js:14:54)
-    at Property.run (file://node_modules/fast-check/lib/esm/check/property/Property.generic.js:46:33)
-```
-
-### Example
-
-```
-{
-  "version": 8,
-  "metadata": {
-    "mapbox:autocomposite": false,
-    "maputnik:renderer": "mbgljs",
-    "openmaptiles:version": "3.x"
-  },
-  "sources": {
-    "ne2_shaded": {
-      "maxzoom": 6,
-      "tileSize": 256,
-      "tiles": [
-        "https://tiles.openfreemap.org/natural_earth/ne2sr/{z}/{x}/{y}.png"
-      ],
-      "type": "raster"
-    },
-    "openmaptiles": {
-      "type": "vector",
-      "url": "https://tiles.openfreemap.org/planet"
-    }
-  },
-  "sprite": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",
-  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
-  "layers": [
-    ""
-  ]
-}
-```
-~~~
-
-## Running
-
-Install npm deps.
-
-Modify `src/fuzz.test.ts` to have `test.only()` on only the type of fuzzing you want to run, alter the fastcheck run count to something like 1000, and run `npm run vitest`.
-
-10000 iterations is around one minute.
+This is the latest version, which uses jazzer.js.
 
 ## License
 
@@ -163,5 +54,4 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 ### Others' code
 
-- `blns.json`: MIT license, Copyright (c) 2015-2020 Max Woolf, https://github.com/minimaxir/big-list-of-naughty-strings
-- `src/style.json`: originally the OpenFreeMap Liberty style with small bits and pieces mashed from other things, see license in https://github.com/hyperknot/openfreemap/blob/main/LICENSE.md
+`seeds_full_json/style.json`: originally the OpenFreeMap Liberty style with small bits and pieces mashed from other things, see license in https://github.com/hyperknot/openfreemap/blob/main/LICENSE.md

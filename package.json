@@ -1,23 +1,23 @@
 {
-  "name": "testharness",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "fuzzer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "fuzz.js",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "vitest": "vitest"
+    "start": "jazzer fuzz ./corpus --sync --cov -i '@maplibre/maplibre-gl-style-spec' -i maplibre-gl-style-spec -i maplibre-style-spec -i jsonlint-lines-primitives -e /internal-fuzzing-tools -e 'node_modules/@babel' -- -use_value_profile=1",
+    "minimize": "mkdir corpus_minimized && jazzer fuzz ./corpus_minimized ./corpus --sync -i '@maplibre/maplibre-gl-style-spec' -i maplibre-gl-style-spec -i maplibre-style-spec -i jsonlint-lines-primitives -e /internal-fuzzing-tools -e 'node_modules/@babel' -- -use_value_profile=1 -merge=1",
+    "start:cluster": "jazzer fuzz ./corpus --sync -i '@maplibre/maplibre-gl-style-spec' -i maplibre-gl-style-spec -i maplibre-style-spec -i jsonlint-lines-primitives -e /internal-fuzzing-tools -e 'node_modules/@babel' -- -use_value_profile=1 -jobs=16 -workers=16",
+    "jazzer": "jazzer"
   },
+  "keywords": [],
+  "author": "Joona Heikkilä",
+  "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.13.5",
-    "typescript": "~5.7.2",
-    "vite": "^6.1.0"
+    "@jazzer.js/core": "file:../jazzer.js/packages/core",
+    "@jazzer.js/bug-detectors": "file:../jazzer.js/packages/bug-detectors"
   },
   "dependencies": {
-    "@maplibre/maplibre-gl-style-spec": "file:../maplibre-style-spec",
-    "fast-check": "^3.23.2",
-    "maplibre-gl": "^5.1.0",
-    "vitest": "^3.0.6"
+    "@maplibre/maplibre-gl-style-spec": "23.1.0",
+    "fast-check": "^4.0.0"
   }
 }
