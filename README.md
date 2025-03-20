@@ -2,7 +2,7 @@
 
 A structured, coverage guided fuzzer for the maplibre-gl-js style spec.
 
-This is a fuzzer based on Jazzer.js to fuzz `@maplibre/maplibre-gl-style-spec`'s JSON style spec.
+This is a fuzzer based on Jazzer.js to fuzz `@maplibre/maplibre-gl-style-spec`'s JSON style spec at the JavaScript library level.
 
 ## Discovered crashes
 
